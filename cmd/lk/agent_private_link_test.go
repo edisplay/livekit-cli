@@ -63,11 +63,12 @@ func TestBuildPrivateLinkListRows_EmptyList(t *testing.T) {
 func TestBuildPrivateLinkListRows_OnePrivateLink(t *testing.T) {
 	links := []*lkproto.PrivateLink{
 		{
-			PrivateLinkId: "pl-1",
-			Name:          "orders-db",
-			Region:        "us-east-1",
-			Port:          6379,
-			Endpoint:      "orders-db-p123.link",
+			PrivateLinkId:      "pl-1",
+			Name:               "orders-db",
+			Region:             "us-east-1",
+			Port:               6379,
+			Endpoint:           "com.amazonaws.vpce.us-east-1.vpce-svc-abc123",
+			ConnectionEndpoint: "orders-db-p123.link",
 		},
 	}
 
@@ -85,26 +86,29 @@ func TestBuildPrivateLinkListRows_OnePrivateLink(t *testing.T) {
 	assert.Equal(t, "orders-db", rows[0][1])
 	assert.Equal(t, "us-east-1", rows[0][2])
 	assert.Equal(t, "6379", rows[0][3])
-	assert.Equal(t, "orders-db-p123.link", rows[0][4])
-	assert.Equal(t, "Healthy", rows[0][5])
-	assert.Equal(t, "-", rows[0][7])
+	assert.Equal(t, "com.amazonaws.vpce.us-east-1.vpce-svc-abc123", rows[0][4])
+	assert.Equal(t, "orders-db-p123.link", rows[0][5])
+	assert.Equal(t, "Healthy", rows[0][6])
+	assert.Equal(t, "-", rows[0][8])
 }
 
 func TestBuildPrivateLinkListRows_TwoPrivateLinksDifferentRegions(t *testing.T) {
 	links := []*lkproto.PrivateLink{
 		{
-			PrivateLinkId: "pl-1",
-			Name:          "orders-db",
-			Region:        "us-east-1",
-			Port:          6379,
-			Endpoint:      "orders-db-p123.link",
+			PrivateLinkId:      "pl-1",
+			Name:               "orders-db",
+			Region:             "us-east-1",
+			Port:               6379,
+			Endpoint:           "com.amazonaws.vpce.us-east-1.vpce-svc-abc123",
+			ConnectionEndpoint: "orders-db-p123.link",
 		},
 		{
-			PrivateLinkId: "pl-2",
-			Name:          "cache",
-			Region:        "eu-west-1",
-			Port:          6380,
-			Endpoint:      "cache-p123.link",
+			PrivateLinkId:      "pl-2",
+			Name:               "cache",
+			Region:             "eu-west-1",
+			Port:               6380,
+			Endpoint:           "com.amazonaws.vpce.eu-west-1.vpce-svc-def456",
+			ConnectionEndpoint: "cache-p123.link",
 		},
 	}
 
@@ -122,12 +126,14 @@ func TestBuildPrivateLinkListRows_TwoPrivateLinksDifferentRegions(t *testing.T) 
 
 	assert.Equal(t, "us-east-1", rows[0][2])
 	assert.Equal(t, "eu-west-1", rows[1][2])
-	assert.Equal(t, "orders-db-p123.link", rows[0][4])
-	assert.Equal(t, "cache-p123.link", rows[1][4])
-	assert.Equal(t, "Healthy", rows[0][5])
-	assert.Equal(t, "Healthy", rows[1][5])
-	assert.Equal(t, "-", rows[0][7])
-	assert.Equal(t, "-", rows[1][7])
+	assert.Equal(t, "com.amazonaws.vpce.us-east-1.vpce-svc-abc123", rows[0][4])
+	assert.Equal(t, "com.amazonaws.vpce.eu-west-1.vpce-svc-def456", rows[1][4])
+	assert.Equal(t, "orders-db-p123.link", rows[0][5])
+	assert.Equal(t, "cache-p123.link", rows[1][5])
+	assert.Equal(t, "Healthy", rows[0][6])
+	assert.Equal(t, "Healthy", rows[1][6])
+	assert.Equal(t, "-", rows[0][8])
+	assert.Equal(t, "-", rows[1][8])
 }
 
 func TestFormatPrivateLinkHealthStatus(t *testing.T) {
